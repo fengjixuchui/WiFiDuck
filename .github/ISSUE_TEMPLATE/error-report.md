@@ -1,14 +1,15 @@
 ---
-name: Bug
-about: Report a bug
-title: "[Bug] "
-labels: bug
+name: Error report
+about: I encountered a problem and need help to solve it
+title: "[Help] "
+labels: help wanted
 assignees: ''
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+**Describe the error**
+A clear and concise description of what the problem is.
+What do you think causes it?
 
 **To Reproduce**
 Steps to reproduce the behavior:
@@ -29,5 +30,8 @@ If applicable, add screenshots to help explain your problem.
  - Version [e.g. 1.0]
  - Hardware [e.g. DSTIKE, DIY]
 
+**Attempts**
+What have you already tried and didn't work out.
+
 **Additional context**
-Add any other context about the problem here.
+Provide as much information as possible, better too much than too little!
