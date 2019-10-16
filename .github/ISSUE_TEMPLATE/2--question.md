@@ -1,5 +1,5 @@
 ---
-name: Question
+name: 2. Question
 about: I have a question about this project
 title: "[Question] "
 labels: question
