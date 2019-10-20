@@ -21,7 +21,9 @@ namespace spiffs {
 
     // ===== PUBLIC ====== //
     void begin() {
+        debug("Initializing SPIFFS...");
         SPIFFS.begin();
+        debugln("OK");
 
         String FILE_NAME = "/startup_spiffs_test";
 
@@ -107,6 +109,7 @@ namespace spiffs {
 
         if (f) {
             f.write(str);
+            f.write("\n");
             f.close();
             debugln("Wrote file");
         } else {
@@ -138,6 +141,10 @@ namespace spiffs {
             res += ' ';
             res += size(dir.fileName());
             res += '\n';
+        }
+
+        if (res.length() == 0) {
+            res += "\n";
         }
 
         return res;
