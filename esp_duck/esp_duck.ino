@@ -7,7 +7,7 @@
 #include "config.h"
 #include "debug.h"
 
-#include "i2c.h"
+#include "com.h"
 #include "duckscript.h"
 #include "webserver.h"
 #include "spiffs.h"
@@ -15,36 +15,34 @@
 #include "cli.h"
 
 void setup() {
-#ifdef ENABLE_DEBUG
-    Serial.begin(DEBUG_BAUD);
-    Serial.setTimeout(200);
-#endif // ifdef DEBUG
+    debug_init();
 
-    i2c::begin();
-    i2c::setOnOK(duckscript::nextLine);
-    // i2c::setOnProcessing();
-    i2c::setOnError(duckscript::stop);
-    i2c::setOnRepeat(duckscript::repeat);
+    com::begin();
 
     spiffs::begin();
-
     settings::begin();
-
     cli::begin();
-
     webserver::begin();
 
-    debugln("\nESP Duck Started!");
+    com::onDone(duckscript::nextLine);
+    com::onError(duckscript::stop);
+    com::onRepeat(duckscript::repeat);
+
+    if (spiffs::freeBytes() > 0) com::send(MSG_STARTED);
+
+    delay(10);
+    com::update();
+
+    debugln("\n[~~~ WiFi Duck v1.0 Started! ~~~]");
+    debugln("    __");
+    debugln("___( o)>");
+    debugln("\\ <_. )");
+    debugln(" `---'   hjw\n");
 }
 
 void loop() {
-    i2c::update();
+    com::update();
     webserver::update();
 
-    if (Serial.available()) {
-        String input = Serial.readStringUntil('\n');
-        cli::parse(input.c_str(), [](const char* str) {
-            Serial.print(str);
-        });
-    }
+    debug_update();
 }

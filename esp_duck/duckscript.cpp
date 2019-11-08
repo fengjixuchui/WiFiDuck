@@ -9,13 +9,8 @@
 #include "config.h"
 #include "debug.h"
 
-#include "i2c.h"
+#include "com.h"
 #include "spiffs.h"
-
-#define RESPONSE_OK 0x00
-#define RESPONSE_PROCESSING 0x01
-#define RESPONSE_REPEAT 0x02
-#define RESPONSE_I2C_ERROR 0xFF
 
 namespace duckscript {
     // ===== PRIVATE ===== //
@@ -49,21 +44,22 @@ namespace duckscript {
             return;
         }
 
-        debugf("Sending: ");
-        uint8_t buf[BUFFER_SIZE];
-        size_t  buf_i { 0 };
-        bool    eol { false }; // End of line
+        debug("Sending: ");
+        char buf[BUFFER_SIZE];
+        unsigned int buf_i =  0;
+        bool eol           =  false; // End of line
 
         while (f.available() && !eol && buf_i < BUFFER_SIZE) {
             uint8_t b = f.read();
-            eol          = (b == '\n');
-            buf[buf_i++] = b;
-            debug(char(b));
+            eol        = (b == '\n');
+            buf[buf_i] = b;
+            ++buf_i;
+            // debug(char(b));
         }
 
-        debugln();
+        if (!eol) debugln();
 
-        i2c::transmit(buf, buf_i);
+        com::send(buf, buf_i);
 
         if (strncmp((char*)buf, "REPEAT", _min(buf_i, 6)) != 0) {
             if (prevMessage) free(prevMessage);
@@ -75,13 +71,11 @@ namespace duckscript {
     }
 
     void repeat() {
-        if (i2c::getStatus() == i2c::status::REPEAT) {
-            if (!prevMessage) {
-                stop();
-            } else {
-                debugln("Repeating last message");
-                i2c::transmit((const uint8_t*)prevMessage, prevMessageLen);
-            }
+        if (!prevMessage) {
+            stop();
+        } else {
+            debugln("Repeating last message");
+            com::send(prevMessage, prevMessageLen);
         }
     }
 
