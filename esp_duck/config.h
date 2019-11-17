@@ -6,6 +6,8 @@
 
 #pragma once
 
+#define VERSION "1.0.0"
+
 /*! ===== DEBUG Settings ===== */
 // #define ENABLE_DEBUG
 // #define DEBUG_PORT Serial
@@ -37,6 +39,9 @@
 #define WIFI_SSID "wifiduck"
 #define WIFI_PASSWORD "wifiduck"
 #define WIFI_CHANNEL "1"
+
+#define HOSTNAME "wifiduck"
+#define URL "wifi.duck"
 
 /*! ========== Safty checks ========== */
 #if !defined(ENABLE_I2C) && !defined(ENABLE_SERIAL)

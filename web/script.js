@@ -27,12 +27,13 @@ function download_txt(fileName, fileContent) {
 }
 
 function fixFileName(fileName) {
-  if (fileName.length > 0 && fileName[0] != '/') {
-    fileName = '/' + fileName;
+  if (fileName.length > 0) {
+    if (fileName[0] != '/') {
+      fileName = '/' + fileName;
+    }
+
+    fileName = fileName.replace(/ /g, '\-');
   }
-
-  fileName = fileName.replace(/ /g, '\-');
-
   return fileName;
 }
 
@@ -56,6 +57,10 @@ function status(mode) {
 // ===== Web Socket ===== //
 function log_ws(msg) {
   log("[WS] " + msg);
+}
+
+function set_version(str) {
+  E("version").innerHTML = str;
 }
 
 var ws = null; // web socket instance
@@ -113,6 +118,8 @@ function ws_init() {
     status("connected");
 
     ws_send("close", log_ws, true);
+    ws_send("version", set_version);
+
     ws_connected();
   };
 

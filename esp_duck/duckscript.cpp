@@ -23,10 +23,12 @@ namespace duckscript {
 
     // ===== PUBLIC ===== //
     void run(String fileName) {
-        debugf("Run file %s\n", fileName.c_str());
-        f       = spiffs::open(fileName);
-        running = true;
-        nextLine();
+        if (fileName.length() > 0) {
+            debugf("Run file %s\n", fileName.c_str());
+            f       = spiffs::open(fileName);
+            running = true;
+            nextLine();
+        }
     }
 
     void nextLine() {
@@ -34,13 +36,13 @@ namespace duckscript {
 
         if (!f) {
             debugln("File error");
-            stop();
+            stopAll();
             return;
         }
 
         if (!f.available()) {
             debugln("Reached end of file");
-            stop();
+            stopAll();
             return;
         }
 
@@ -72,14 +74,14 @@ namespace duckscript {
 
     void repeat() {
         if (!prevMessage) {
-            stop();
+            stopAll();
         } else {
             debugln("Repeating last message");
             com::send(prevMessage, prevMessageLen);
         }
     }
 
-    void stop() {
+    void stopAll() {
         if (running) {
             if (f) f.close();
             running = false;
@@ -88,10 +90,13 @@ namespace duckscript {
     }
 
     void stop(String fileName) {
-        if (running && f && (fileName == currentScript())) {
-            f.close();
-            running = false;
-            debugln("Stopped script");
+        if (fileName.length() == 0) stopAll();
+        else {
+            if (running && f && (fileName == currentScript())) {
+                f.close();
+                running = false;
+                debugln("Stopped script");
+            }
         }
     }
 

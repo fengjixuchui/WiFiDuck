@@ -13,8 +13,9 @@
 #include "duckparser.h"
 
 // ! Communication request codes
-#define REQ_SOT 0x01 // !< Start of transmission
-#define REQ_EOT 0x04 // !< End of transmission
+#define REQ_SOT 0x01     // !< Start of transmission
+#define REQ_VERSION 0x02 // !< Request current version
+#define REQ_EOT 0x04     // !< End of transmission
 
 // ! Communication response codes
 #define RES_OK 0x00
@@ -34,12 +35,19 @@ namespace com {
      * \brief Internal function to buffer received data
      *
      * Writes the receieved data into the buffer.
-     * Returns wheter or not data was received.
+     * Returns wheter or not data that is to be parsed was received.
      */
     bool receive(Stream& stream) {
         if (stream.available()) {
             debug("RECEIVED ");
 
+            /*
+                        if ((stream.available() == 1) && (stream.peek() == REQ_VERSION)) {
+                            stream.read();
+                            stream.print(VERSION);
+                            return false;
+                        }
+             */
             // ! Skip bytes
             while (stream.available() && !ongoing_transmission) {
                 if (stream.read() == REQ_SOT) {
@@ -58,9 +66,7 @@ namespace com {
                         start_parser         = true;
                         ongoing_transmission = false;
                     } else {
-                        if (c == '\n') debug("\\n");
-                        else if (c == '\r') debug("\\r");
-                        else debug(c);
+                        debug(c);
                         buffer.data[buffer.len] = c;
                         ++buffer.len;
                     }

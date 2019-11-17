@@ -48,26 +48,241 @@
         <h2>Editor <a class="reload" id="editorReload">&#x21bb;</a></h2>
 
         <label>Filename:</label>
-        <input type="text" class="smooth" value="/example" id="editorFile">
+        <input type="text" class="smooth" value="/" id="editorFile">
 
-        <textarea class="smooth" id="editor">REM Hello World!</textarea>
+        <textarea class="smooth" id="editor"></textarea>
 
-        <button class="danger" id="editorDelete">delete</button>
-        <button class="primary" id="editorDownload">download</button>
-        <button class="warn" id="editorStop">stop</button>
-        <button class="warn" id="editorRun">run</button>
-        <button class="success" id="editorSave">save</button>
+        <div id="editor-primary-buttons">
+          <p>
+            <button class="warn" id="editorRun">run</button>
+            <button class="success" id="editorSave">save</button>
+          </p>
+        </div>
 
         <p id="editorinfo">saved</p>
+
+        <button class="danger" id="editorDelete">delete</button>
+        <button class="warn" id="editorStop">stop</button>
+        <br>
+        <button class="primary" id="editorDownload">download</button>
+        <button class="primary" id="editorAutorun">Enable autorun</button>
+
+
+        <br>
+        <hr>
+        <br>
+
+        <h3>Ducky Script</h3>
+
+        <h4>Basics</h4>
+
+        <p>
+          Keys are separated by a single space.<br>
+          Everything written in a single line gets pressed and released at the same time.<br>
+          To write text, use the STRING function.
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Example</th>
+              <th>Explanation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>WINDOWS <br> r</td>
+              <td>Type the Windows key and then the r key</td>
+            </tr>
+            <tr>
+              <td>WINDOWS r</td>
+              <td>Press the Windows key and the r key simultaneously</td>
+            </tr>
+            <tr>
+              <td>STRING WINDOWS r</td>
+              <td>Write WINDOWS r</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>Functions</h4>
+        <table id="ducky-functions-table">
+          <thead>
+            <tr>
+              <th>Command</th>
+              <th>Example</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>REM</code></td>
+              <td><code>REM Hello World!</code></td>
+              <td>Comment</td>
+            </tr>
+            <tr>
+              <td><code>DEFAULTDELAY</code> or <code>DEFAULT_DELAY</code></td>
+              <td><code>DEFAULTDELAY 200</code></td>
+              <td>Time in ms between every command</td>
+            </tr>
+            <tr>
+              <td><code>DELAY</code></td>
+              <td><code>DELAY 1000</code></td>
+              <td>Delay in ms</td>
+            </tr>
+            <tr>
+              <td><code>STRING</code></td>
+              <td><code>STRING Hello World!</code></td>
+              <td>Types the following string</td>
+            </tr>
+            <tr>
+              <td><code>REPEAT</code> or <code>REPLAY</code></td>
+              <td><code>REPEAT 3</code></td>
+              <td>Repeats the last command n times</td>
+            </tr>
+            <tr>
+              <td><code>LOCALE</code></td>
+              <td><code>LOCALE DE</code></td>
+              <td>Sets the keyboard layout. Currently supported: <code>DE</code>, <code>GB</code>, <code>US</code>
+              </td>
+            </tr>
+            <tr>
+              <td><code>KEYCODE</code></td>
+              <td><code>KEYCODE 0x02 0x04</code></td>
+              <td>Types a specific key code (modifier, key1[, ..., key6]) in decimal or hexadecimal</td>
+            </tr>
+            <tr>
+              <td><code>LED</code></td>
+              <td><code>LED 40 20 10</code></td>
+              <td>Changes the color of the LED in decimal RGB values (0-255)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>Standard Keys</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Key</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>a</code> - <code>z</code></td>
+            </tr>
+            <tr>
+              <td><code>A</code> - <code>Z</code></td>
+            </tr>
+            <tr>
+              <td><code>0</code> - <code>9</code></td>
+            </tr>
+            <tr>
+              <td><code>F1</code> - <code>F12</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>Modifier Keys</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Key</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>CTRL</code> or <code>CONTROL</code></td>
+            </tr>
+            <tr>
+              <td><code>SHIFT</code></td>
+            </tr>
+            <tr>
+              <td><code>ALT</code></td>
+            </tr>
+            <tr>
+              <td><code>WINDOWS</code> or <code>GUI</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>Other Keys</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Key</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>ENTER</code></td>
+            </tr>
+            <tr>
+              <td><code>MENU</code> or <code>APP</code></td>
+            </tr>
+            <tr>
+              <td><code>DELETE</code></td>
+            </tr>
+            <tr>
+              <td><code>HOME</code></td>
+            </tr>
+            <tr>
+              <td><code>INSERT</code></td>
+            </tr>
+            <tr>
+              <td><code>PAGEUP</code></td>
+            </tr>
+            <tr>
+              <td><code>PAGEDOWN</code></td>
+            </tr>
+            <tr>
+              <td><code>UP</code> or <code>UPARROW</code></td>
+            </tr>
+            <tr>
+              <td><code>DOWN</code> or <code>DOWNARROW</code></td>
+            </tr>
+            <tr>
+              <td><code>LEFT</code> or <code>LEFTARROW</code></td>
+            </tr>
+            <tr>
+              <td><code>RIGHT</code> or <code>RIGHTARROW</code></td>
+            </tr>
+            <tr>
+              <td><code>TAB</code></td>
+            </tr>
+            <tr>
+              <td><code>END</code></td>
+            </tr>
+            <tr>
+              <td><code>ESC</code> or <code>ESCAPE</code></td>
+            </tr>
+            <tr>
+              <td><code>SPACE</code></td>
+            </tr>
+            <tr>
+              <td><code>PAUSE or BREAK</code></td>
+            </tr>
+            <tr>
+              <td><code>CAPSLOCK</code></td>
+            </tr>
+            <tr>
+              <td><code>NUMLOCK</code></td>
+            </tr>
+            <tr>
+              <td><code>PRINTSCREEN</code></td>
+            </tr>
+            <tr>
+              <td><code>SCROLLLOCK</code></td>
+            </tr>
+          </tbody>
+        </table>
 
         <footer>
           <a href="settings.html">Settings</a> |
           <a href="terminal.html">Terminal</a> |
           <a href="credits.html">Credits</a> |
-          <a href="https://github.com/spacehuhn/WiFiDuck" target="_blank">Source</a> |
-          <a href="https://github.com/spacehuhn/WiFiDuck/wiki" target="_blank">Wiki</a>
+          <a href="https://github.com/spacehuhn/WiFiDuck" target="_blank">Source</a>
           <br><br>
-          Version 1.0<br>
+          <span id="version"></span><br>
           Copyright (c) 2019 Stefan Kremser<br>
           <a href="https://spacehuhn.io" target="_blank">spacehuhn.io</a>
         </footer>
