@@ -20,8 +20,10 @@ A worthy successor of the <a href="https://github.com/spacehuhn/wifi_ducky/">WiF
 <br>
 <br>
 <br>
+<a href="https://www.youtube.com/watch?v=sSJuGXd8QRk">
 <img alt="running example script" src="https://raw.githubusercontent.com/spacehuhn/WiFiDuck/master/img/showcase.gif">
 <br>
+<b>Watch the full video</a></b>
 </p>
 
 ## Overview
@@ -83,16 +85,17 @@ Your scripts are saved on the device itself, so you don't need a micro SD card e
 ## Changes
 
 Changes since the [WiFi Ducky](https://github.com/spacehuhn/wifi_ducky/) predecessor:
-* Support for multiple keyboard layouts, adjustable within the script
-* No size limit per script (other than the physical limit)
+* Support for multiple keyboard layouts
+* No size limit per script (other than the physical memory limit)
 * No line length limit for the `STRING` command
 * Faster typing speed
-* Added RGB (Neopixel LED)
-* Reworked web interface
-* Replaced serial with i2c connection, to make debugging and flashing easy
+* Optional Neopixel RGB LED
+* Entirely new web interface
 * Support for I2C to enable easier debugging and DIY builds
 
 ## Hardware
+
+[Video Tutorial](https://youtu.be/-Gmv98tUiYw)  
 
 This tool requires following hardware:  
 * An Atmega32u4 based board (for example: Arduino Leonardo or Pro Micro)  
@@ -124,6 +127,8 @@ The Atmega32u4 is the USB keyboard, the ESP8266 is the WiFi access point.
 * Sparkfun Pro Micro
 * CJMCU Beetle
 * SS Micro
+
+**DIGISPARK or other ATTINY85 based development boards, are NOT supported!**  
 
 #### ESP8266 Development Boards
 * NodeMCU 1.0 (ESP-12E Module)
@@ -199,6 +204,8 @@ and `NodeMCU 1.0 (ESP-12E Module)` for the ESP8266.
 
 ## Flash Software
 
+[Video Tutorial](https://youtu.be/VQAzxBefLZo)  
+
 ### Preparations
 
 1. Download and install the [Arduino IDE](https://www.arduino.cc/en/main/software).
@@ -236,6 +243,13 @@ You can update it over the air! Simply connect to the Wi-Fi network its hosting
 (default SSID and password is `wifiduck`).  
 In Arduino under `Tools` > `Port` you should now see a network port.
 Select it and press `Upload`.  
+
+**Note:** It can take a minute until the device is ready.
+After the initial flashing, the ESP8266 has to format its memory.  
+
+If you connected the RGB LED:
+* Blue LED = Connection working
+* Green LED = Device ready
 
 ### Unbrick Atmega32u4
 
@@ -424,6 +438,7 @@ Currently the supported keyboard layouts are:
 - [DE](https://github.com/spacehuhn/WiFiDuck/blob/master/atmega_duck/locale_de.h)
 - [GB](https://github.com/spacehuhn/WiFiDuck/blob/master/atmega_duck/locale_gb.h)
 - [US](https://github.com/spacehuhn/WiFiDuck/blob/master/atmega_duck/locale_us.h)
+- [ES](https://github.com/spacehuhn/WiFiDuck/blob/master/atmega_duck/locale_es.h)
 
 All standard keys are defined in [usb_hid_keys.h](https://github.com/spacehuhn/WiFiDuck/blob/master/atmega_duck/usb_hid_keys.h).  
 To translate a keyboard layout, you have to match each character on
@@ -432,14 +447,15 @@ This stuff is hard to explain in writing and requires a lot of manual work and t
 
 1. Copy one of the existing layouts files, like [locale_us.h](https://github.com/spacehuhn/WiFiDuck/blob/master/atmega_duck/locale_us.h).  
 Preferably one that is close to your keyboard layout, it will save you time!  
-2. Rename the file and its variables to your language code.
+2. Add `#include "locale_xx.h"` to the end of the locales.h file.
+3. Rename the file and its variables to your language code.
 For example:  
 `locale_xx.h` -> `locale_de.h`,  
 `ascii_xx` -> `ascii_de`,  
 `locale_xx` -> `locale_de`,  
 `extended_ascii_xx` -> `extended_ascii_de`,  
 `utf8_xx` -> `utf8_de`.  
-3. Modify the ASCII array.  
+4. Modify the ASCII array.  
 The ASCII array has a fixed size. Each row describes a key.
 First a modifier key like `KEY_MOD_LSHIFT`, then a character key.
 Some ASCII characters can't be typed or don't require a modifier,
@@ -451,19 +467,19 @@ This is because German keyboards use QWERTZ instead of the QWERTY layout
 and since the letter is uppercase, shift must be pressed as well.   
 Thankfully you don't have to trial and error everything, the Hak5 Community
 translated a lot of layouts already [here](https://github.com/hak5darren/USB-Rubber-Ducky/tree/master/Encoder/resources). It's just written in a different syntax. For example, `ASCII_20` (20 in hexadecimal) is the 32th character in our ascii array.  
-4. Modify or create the extended ASCII array.  
+5. Modify or create the extended ASCII array.  
 The extended ASCII array doesn't have a fixed size and is only as long as you make it.
 First the character code. For example, [ä](https://theasciicode.com.ar/extended-ascii-code/letter-a-umlaut-diaeresis-a-umlaut-lowercase-ascii-code-132.html) has the index 132, or 84 in hex.
 It doesn't use a modifier and sits where the apostrophe key is on a US keyboard:
 `0x84, KEY_NONE,       KEY_APOSTROPHE, // ä`.  
-5. Modify or create the UTF-8 array.  
+6. Modify or create the UTF-8 array.  
 The UTF-8 array is variable in length, too.  
 The first 4 bytes are the character code.  
 For example, [Ä](https://www.fileformat.info/info/unicode/char/00c4/index.htm) has the hex code c384 or 0xc3 0x84. The other 2 bytes are not used so we set them to 0.
 Because the letter is uppercase, we need to press the shift key and like before, the letter is typed by pressing the same key as the apostrophe key of a US keyboard: `0xc3, 0x84, 0x00, 0x00, KEY_MOD_LSHIFT, KEY_APOSTROPHE, // Ä`.  
-6. Edit the hid_locale_t structure.  
+7. Edit the hid_locale_t structure.  
 If you renamed all variables accordingly, there's nothing left to do.  
-7. Go to [duckparser.cpp](https://github.com/spacehuhn/WiFiDuck/blob/master/atmega_duck/duckparser.cpp#L163) at `// LOCALE (-> change keyboard layout)` you can see a bunch of else if statements.
+8. Go to [duckparser.cpp](https://github.com/spacehuhn/WiFiDuck/blob/master/atmega_duck/duckparser.cpp#L163) at `// LOCALE (-> change keyboard layout)` you can see a bunch of else if statements.
 You need to copy one for your layout.  
 
 Before adding GB layout:  
@@ -485,14 +501,14 @@ if (compare(w->str, w->len, "US", CASE_SENSETIVE)) {
    keyboard::setLocale(&locale_gb);
 }
 ```
-8. Test your layout with a Ducky Script that contains all characters of your keyboard. For example:  
+9. Test your layout with a Ducky Script that contains all characters of your keyboard. For example:  
 ```
 LOCALE DE
 STRING !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrstuvwxyz{|}~²³äöüÄÖÜß€°§`
 ENTER
 ```
-9. Add a link to your layout to this README and please feel free to improve this tutorial to help future translators!
-10. [Create a Pull Request](https://help.github.com/en/articles/creating-a-pull-request)
+10. Add a link to your layout to this README and please feel free to improve this tutorial to help future translators!
+11. [Create a Pull Request](https://help.github.com/en/articles/creating-a-pull-request)
 
 ## License
 
