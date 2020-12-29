@@ -1,7 +1,6 @@
 /*
-   Copyright (c) 2019 Stefan Kremser
    This software is licensed under the MIT License. See the license file for details.
-   Source: github.com/spacehuhn/WiFiDuck
+   Source: https://github.com/spacehuhntech/WiFiDuck
  */
 
 #include "webserver.h"
@@ -93,6 +92,20 @@ namespace webserver {
 
         server.onNotFound([](AsyncWebServerRequest* request) {
             request->redirect("/error404.html");
+        });
+
+        server.on("/run", [](AsyncWebServerRequest* request) {
+            String message;
+
+            if (request->hasParam("cmd")) {
+                message = request->getParam("cmd")->value();
+            }
+
+            request->send(200, "text/plain", "Run: " + message);
+
+            cli::parse(message.c_str(), [](const char* str) {
+                debugf("%s\n", str);
+            }, false);
         });
 
         WEBSERVER_CALLBACK;

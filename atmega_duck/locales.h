@@ -1,7 +1,6 @@
 /*
-   Copyright (c) 2019 Stefan Kremser
    This software is licensed under the MIT License. See the license file for details.
-   Source: github.com/spacehuhn/WiFiDuck
+   Source: https://github.com/spacehuhntech/WiFiDuck
  */
 
 #pragma once
@@ -13,3 +12,6 @@
 #include "locale_de.h"
 #include "locale_gb.h"
 #include "locale_es.h"
+#include "locale_fr.h"
+#include "locale_ru.h"
+#include "locale_dk.h"

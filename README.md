@@ -50,6 +50,7 @@ A worthy successor of the <a href="https://github.com/spacehuhn/wifi_ducky/">WiF
   - [Edit Web Files](#edit-web-files)
   - [Translate Keyboard Layout](#translate-keyboard-layout)
 - [License](#license)
+- [Credits](#credits)
 
 ## Disclaimer
 
@@ -89,7 +90,7 @@ Changes since the [WiFi Ducky](https://github.com/spacehuhn/wifi_ducky/) predece
 * No size limit per script (other than the physical memory limit)
 * No line length limit for the `STRING` command
 * Faster typing speed
-* Optional Neopixel RGB LED
+* Optional Neopixel or Dotstar LED
 * Entirely new web interface
 * Support for I2C to enable easier debugging and DIY builds
 
@@ -100,7 +101,7 @@ Changes since the [WiFi Ducky](https://github.com/spacehuhn/wifi_ducky/) predece
 This tool requires following hardware:  
 * An Atmega32u4 based board (for example: Arduino Leonardo or Pro Micro)  
 * An ESP8266 or ESP8285 (for example NodeMCU or Wemos d1 mini)  
-* [Optional] A single Neopixel LED (WS2812b)  
+* [Optional] A single Neopixel (WS2812b) or Dotstar (APA102) LED
 
 You will also need a computer and USB data cable to flash the microcontrollers.  
 
@@ -115,6 +116,7 @@ you'll obviously need soldering equipment and a bit of experience using it.
 
 #### Preflashed All-In-One Boards
 * [DSTIKE WiFi Duck](#dstike-wifi-duck)
+* [Malduino W](https://maltronics.com/collections/malduinos/products/malduino-w)
 
 You can use any Atmega32u4 or ESP8266 based development board,
 but if you have no idea where to start, here's a list.  
@@ -146,6 +148,15 @@ Here's a map of the pins that need to be connected.
 | `D2` alias `GPIO 4` | `2` alias `SDA` |
 | `GND` | `GND` |
 
+Both chips have to be powered in order to work.  
+To share power between both, you need a voltage regulator that takes 5V and turns it into 3.3V.  
+It's because USB runs at 5V but the ESP8266 runs at 3.3V. Luckily most development boards have such a regulator on board.  
+**DO NOT CONNECT ESP8266 VCC to the ATMEGA32u4 VCC**, it will kill the ESP826. Instead look for the `5V` or `VIN` pin on your dev board, as those will be connected to the regulator.  
+
+| ESP8266 Dev Board |      Atmega32u4      |
+| ----------------- | -------------------- |
+| `5V` or `VIN`     | `RAW`, `5V` or `VIN` |
+
 If you like to add a Neopixel (WS2812b) LED:  
 
 | Atmega32u4 | Neopixel LED |
@@ -162,10 +173,15 @@ If you like to add a Neopixel (WS2812b) LED:
 
 To make the DIY process easier, I designed a small PCB.  
 
+Design Files:  
 * Pro Micro + Wemos d1 mini: https://easyeda.com/Spacehuhn/wifi-duck
 * Pro Micro + NodeMCU: https://easyeda.com/Spacehuhn/diy-wifi-duck-pro-micro-nodemcu
 
-You solder a Pro Micro board on one side and a Wemos d1 mini
+You can also order them on OSHPark:
+* Pro Micro + Wemos d1 mini: https://oshpark.com/shared_projects/ARCED9je
+* Pro Micro + NodeMCU: https://oshpark.com/shared_projects/XUuUH1HB
+
+You'll have to solder a Pro Micro board on one side and a Wemos d1 mini
 or NodeMCU board (depending on the PCB) on the other side.  
 That's it.  
 You don't even have to solder all pins,
@@ -188,6 +204,8 @@ You can purchase one here:
 
 You can update the ESP8266 over the air and flash the Atmega32u4 via Arduino,
 all while enclosed in its neat little case.  
+
+[Update Tutorial Video](https://youtu.be/e3-nsOjclsY)
 
 If you wish to develop your own software or help improve this one,
 the 8-bit DIP-switch makes it easy for you to access the Atmega32u4 or ESP8266 independently.  
@@ -298,7 +316,7 @@ To write text, use the STRING function.
 | `DELAY` | `DELAY 1000` | Delay in ms |
 | `STRING` | `STRING Hello World!` | Types the following string |
 | `REPEAT` or `REPLAY` | `REPEAT 3` | Repeats the last command n times |
-| `LOCALE` | `LOCALE DE` | Sets the keyboard layout. Currently supported: `DE`, `GB`, `US` |
+| `LOCALE` | `LOCALE DE` | Sets the keyboard layout. Available: `DE`, `ES`, `GB`, `US`, `DK`, `RU`, `FR` |
 | `KEYCODE` | `KEYCODE 0x02 0x04` | Types a specific key code (modifier, key1[, ..., key6]) in decimal or hexadecimal |
 | `LED` | `LED 40 20 10` |Changes the color of the LED in decimal RGB values (0-255) |
 
@@ -439,6 +457,9 @@ Currently the supported keyboard layouts are:
 - [GB](https://github.com/spacehuhn/WiFiDuck/blob/master/atmega_duck/locale_gb.h)
 - [US](https://github.com/spacehuhn/WiFiDuck/blob/master/atmega_duck/locale_us.h)
 - [ES](https://github.com/spacehuhn/WiFiDuck/blob/master/atmega_duck/locale_es.h)
+- [DK](https://github.com/spacehuhn/WiFiDuck/blob/master/atmega_duck/locale_dk.h)
+- [RU](https://github.com/spacehuhn/WiFiDuck/blob/master/atmega_duck/locale_ru.h)
+- [FR (ASCII only)](https://github.com/spacehuhn/WiFiDuck/blob/master/atmega_duck/locale_fr.h)
 
 All standard keys are defined in [usb_hid_keys.h](https://github.com/spacehuhn/WiFiDuck/blob/master/atmega_duck/usb_hid_keys.h).  
 To translate a keyboard layout, you have to match each character on
@@ -504,13 +525,24 @@ if (compare(w->str, w->len, "US", CASE_SENSETIVE)) {
 9. Test your layout with a Ducky Script that contains all characters of your keyboard. For example:  
 ```
 LOCALE DE
-STRING !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_abcdefghijklmnopqrstuvwxyz{|}~²³äöüÄÖÜß€°§`
+STRING !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_abcdefghijklmnopqrstuvwxyz{|}~²³äöüÄÖÜß€°§`
 ENTER
 ```
-10. Add a link to your layout to this README and please feel free to improve this tutorial to help future translators!
+10. Add a link to your layout to [README](README.md), to [web/index.html](web/index.html) and please feel free to improve this tutorial to help future translators!
 11. [Create a Pull Request](https://help.github.com/en/articles/creating-a-pull-request)
 
 ## License
 
 This software is licensed under the MIT License.
 See the [license file](LICENSE) for details.  
+
+## Credits
+
+Other software used for this project:
+  - [Arduino](https://www.arduino.cc)
+  - [Neopixel Library](https://github.com/adafruit/Adafruit_NeoPixel)
+  - [Dotstar Library](https://github.com/adafruit/Adafruit_DotStar)
+  - [AVR, ESP8266 & SAMD Arduino Core](https://github.com/spacehuhn/hardware/tree/master/wifiduck)
+  - [ESPAsyncTCP](https://github.com/me-no-dev/ESPAsyncTCP)
+  - [ESPAsyncWebServer](https://github.com/me-no-dev/ESPAsyncWebServer)
+  - [SimpleCLI](https://github.com/spacehuhn/SimpleCLI)
